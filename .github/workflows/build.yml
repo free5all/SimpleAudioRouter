@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -23,10 +23,14 @@ jobs:
       - name: Restore
         run: dotnet restore SimpleAudioRouter.sln
 
+      - name: Generate build assets
+        shell: pwsh
+        run: ./scripts/generate-build-assets.ps1 -Configuration Release
+
       - name: Build
         run: dotnet build SimpleAudioRouter.sln -c Release --no-restore
 
-  release:
+  installer:
     runs-on: windows-latest
     needs: build
     if: github.event_name == 'push'
@@ -42,6 +46,10 @@ jobs:
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
 
+      - name: Generate build assets
+        shell: pwsh
+        run: ./scripts/generate-build-assets.ps1 -Configuration Release
+
       - name: Read version
         id: version
         shell: pwsh
@@ -55,11 +63,9 @@ jobs:
         shell: pwsh
         run: ./installer/build-installer.ps1
 
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: v${{ steps.version.outputs.version }}
-          generate_release_notes: true
-          files: dist/SimpleAudioRouter-Setup-*.exe
-          fail_on_unmatched_files: true
+          name: SimpleAudioRouter-Setup-v${{ steps.version.outputs.version }}
+          path: dist/SimpleAudioRouter-Setup-*.exe
+          if-no-files-found: error

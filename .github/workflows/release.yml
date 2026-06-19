@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version (must match csproj and artifact name, e.g. 1.1.0)
+        required: true
+        type: string
+      build_run_id:
+        description: Build workflow run ID (leave blank to use latest successful build on main)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve build run
+        id: build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -n "${{ inputs.build_run_id }}" ]; then
+            echo "run_id=${{ inputs.build_run_id }}" >> "$GITHUB_OUTPUT"
+          else
+            run_id="$(gh run list --repo "${{ github.repository }}" --workflow build.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+            if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+              echo "No successful Build workflow run found on main." >&2
+              exit 1
+            fi
+            echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download installer artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.build.outputs.run_id }}
+          name: SimpleAudioRouter-Setup-v${{ inputs.version }}
+          path: dist
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          name: v${{ inputs.version }}
+          generate_release_notes: true
+          files: dist/*
+          fail_on_unmatched_files: true

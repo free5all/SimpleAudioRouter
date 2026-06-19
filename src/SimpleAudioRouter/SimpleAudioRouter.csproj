@@ -30,6 +30,7 @@
     <AppIconFile>$(IntermediateOutputPath)app.ico</AppIconFile>
     <ApplicationIcon>$(AppIconFile)</ApplicationIcon>
     <RepositoryInfoFile>$(IntermediateOutputPath)RepositoryInfo.g.cs</RepositoryInfoFile>
+    <PrepareForBuildDependsOn>GenerateAppIcon;GenerateRepositoryInfo;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,15 +44,19 @@
     <Compile Include="$(RepositoryInfoFile)" Link="Generated\RepositoryInfo.g.cs" Visible="false" />
   </ItemGroup>
 
-  <Target Name="GenerateAppIcon" BeforeTargets="BeforeBuild"
+  <Target Name="GenerateAppIcon"
+          Condition="'$(DesignTimeBuild)' != 'true'"
           Inputs="$(ProjectDir)assets\SimpleAudioRouter.png;$(ProjectDir)assets\generate-icon.ps1"
           Outputs="$(AppIconFile)">
+    <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)assets\generate-icon.ps1&quot; -OutputPath &quot;$(AppIconFile)&quot;" />
   </Target>
 
-  <Target Name="GenerateRepositoryInfo" BeforeTargets="CoreCompile"
-          Inputs="$(ProjectDir)assets\generate-repository-info.ps1;$(MSBuildThisFileDirectory)..\..\..\.git\config"
+  <Target Name="GenerateRepositoryInfo"
+          Condition="'$(DesignTimeBuild)' != 'true'"
+          Inputs="$(ProjectDir)assets\generate-repository-info.ps1"
           Outputs="$(RepositoryInfoFile)">
+    <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)assets\generate-repository-info.ps1&quot; -OutputPath &quot;$(RepositoryInfoFile)&quot; -RepoRoot &quot;$(MSBuildThisFileDirectory)..\..&quot;" />
   </Target>
 

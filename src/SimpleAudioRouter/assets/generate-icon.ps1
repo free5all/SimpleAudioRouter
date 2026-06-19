@@ -9,8 +9,7 @@ $assetsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pngPath = Join-Path $assetsDir "SimpleAudioRouter.png"
 
 if (-not (Test-Path $pngPath)) {
-    Write-Host "SimpleAudioRouter.png not found - skipping icon generation."
-    exit 0
+    Write-Error "SimpleAudioRouter.png not found at $pngPath"
 }
 
 Add-Type -AssemblyName System.Drawing

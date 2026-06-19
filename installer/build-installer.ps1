@@ -13,6 +13,9 @@ if ([string]::IsNullOrWhiteSpace($version)) {
 }
 
 Write-Host "Publishing SimpleAudioRouter v$version (Release, win-x64, self-contained)..."
+
+& (Join-Path $repoRoot "scripts\generate-build-assets.ps1") -Configuration Release
+
 dotnet publish $project `
     -c Release `
     -r win-x64 `

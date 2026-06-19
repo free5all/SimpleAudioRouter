@@ -64,4 +64,13 @@ When you quit for real, the previous default playback device is restored.
 
 ## Releases
 
-Pushes to `main`/`master` build the installer and publish a GitHub Release tagged `v{version}`, where version is read from `src/SimpleAudioRouter/SimpleAudioRouter.csproj`. Bump that before merging if you want a new release version.
+Pushes to `main`/`master` build the installer and upload it as a workflow artifact.
+
+To publish a [GitHub Release](https://github.com/free5all/SimpleAudioRouter/releases) manually:
+
+1. Bump the version in `src/SimpleAudioRouter/SimpleAudioRouter.csproj` and merge to `main`.
+2. Wait for the **Build** workflow to finish on that commit.
+3. Run the **Release** workflow from the Actions tab (`workflow_dispatch`).
+4. Enter the version (e.g. `1.1.0`). Leave **build run ID** blank to use the latest successful build, or paste a specific run ID from the Build workflow.
+
+Downloads live on the Releases page, not the Actions artifacts tab.
