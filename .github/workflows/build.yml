@@ -20,37 +20,22 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Restore
-        run: dotnet restore SimpleAudioRouter.sln
-
       - name: Generate build assets
         shell: pwsh
         run: ./scripts/generate-build-assets.ps1 -Configuration Release
+
+      - name: Restore
+        run: dotnet restore SimpleAudioRouter.sln
 
       - name: Build
         run: dotnet build SimpleAudioRouter.sln -c Release --no-restore
 
-  installer:
-    runs-on: windows-latest
-    needs: build
-    if: github.event_name == 'push'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-
       - name: Install Inno Setup
+        if: github.event_name == 'push'
         run: choco install innosetup -y --no-progress
 
-      - name: Generate build assets
-        shell: pwsh
-        run: ./scripts/generate-build-assets.ps1 -Configuration Release
-
       - name: Read version
+        if: github.event_name == 'push'
         id: version
         shell: pwsh
         run: |
@@ -60,10 +45,12 @@ jobs:
           "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Build installer
+        if: github.event_name == 'push'
         shell: pwsh
         run: ./installer/build-installer.ps1
 
       - name: Upload installer artifact
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: SimpleAudioRouter-Setup-v${{ steps.version.outputs.version }}
