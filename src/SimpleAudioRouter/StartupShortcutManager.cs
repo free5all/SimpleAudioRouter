@@ -33,7 +33,7 @@ internal static class StartupShortcutManager
         shortcut.TargetPath = exePath;
         shortcut.Arguments = "";
         shortcut.WorkingDirectory = workDir;
-        shortcut.Description = "Simple Audio Router";
+        shortcut.Description = AppInfo.ProductName;
         shortcut.IconLocation = $"{exePath},0";
         shortcut.Save();
     }

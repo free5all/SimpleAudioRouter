@@ -14,8 +14,8 @@
     <Version>1.1.0</Version>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
-    <AssemblyTitle>Simple Audio Router</AssemblyTitle>
-    <Product>Simple Audio Router</Product>
+    <AssemblyTitle>SimpleAudioRouter</AssemblyTitle>
+    <Product>SimpleAudioRouter</Product>
     <Company>SimpleAudioRouter</Company>
     <Description>Splits system audio to separate left and right output devices.</Description>
     <Copyright>Copyright © SimpleAudioRouter</Copyright>

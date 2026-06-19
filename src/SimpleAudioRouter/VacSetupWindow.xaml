@@ -34,10 +34,9 @@
 
             <Border Grid.Row="1" Style="{StaticResource ContentCardStyle}">
                 <StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="0,0,0,12"
+                    <TextBlock x:Name="IntroText" TextWrapping="Wrap" Margin="0,0,0,12"
                                Foreground="{DynamicResource MutedTextBrush}"
-                               LineHeight="20"
-                               Text="SimpleAudioRouter needs a virtual audio driver. Download the official package, run the installer, then wait for detection."/>
+                               LineHeight="20"/>
                     <TextBlock x:Name="LinkText" Margin="0,0,0,12" Foreground="{DynamicResource AccentBrush}"
                                Cursor="Hand" MouseLeftButtonUp="LinkText_MouseLeftButtonUp"
                                Text="https://vac.muzychenko.net/en/download.htm"/>

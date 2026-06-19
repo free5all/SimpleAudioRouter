@@ -5,8 +5,6 @@ namespace SimpleAudioRouter;
 
 internal sealed class TrayService : IDisposable
 {
-    private const string AppName = "SimpleAudioRouter";
-
     private readonly NotifyIcon _notifyIcon;
     private readonly ContextMenuStrip _menu;
     private TrayIconState _currentState = TrayIconState.Idle;
@@ -16,7 +14,7 @@ internal sealed class TrayService : IDisposable
         _notifyIcon = new NotifyIcon
         {
             Icon = AppIconHelper.GetTrayIcon(TrayIconState.Idle),
-            Text = AppName,
+            Text = AppInfo.ProductName,
             Visible = true,
         };
 
@@ -33,13 +31,13 @@ internal sealed class TrayService : IDisposable
     public void SetStatus(string status, TrayIconState state)
     {
         _currentState = state;
-        _notifyIcon.Text = Truncate($"{AppName} — {status}", 63);
+        _notifyIcon.Text = Truncate($"{AppInfo.ProductName} — {status}", 63);
         _notifyIcon.Icon = AppIconHelper.GetTrayIcon(state);
     }
 
     public void ShowTrayNotificationOnce()
     {
-        _notifyIcon.BalloonTipTitle = AppName;
+        _notifyIcon.BalloonTipTitle = AppInfo.ProductName;
         _notifyIcon.BalloonTipText = "Running in the tray. Double-click the icon to reopen.";
         _notifyIcon.BalloonTipIcon = _currentState switch
         {

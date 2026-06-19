@@ -33,8 +33,7 @@
                 <StackPanel>
                     <CheckBox x:Name="StartWithWindowsCheckBox"
                               Content="Start with Windows"
-                              Margin="0,0,0,10"
-                              ToolTip="Launch SimpleAudioRouter when Windows starts."/>
+                              Margin="0,0,0,10"/>
                     <CheckBox x:Name="StartMinimizedCheckBox"
                               Content="Start minimized to tray"
                               Margin="0,0,0,10"

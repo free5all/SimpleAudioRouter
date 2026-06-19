@@ -13,6 +13,7 @@ public partial class SettingsWindow : Window
     public SettingsWindow(bool startWithWindows, bool startMinimized, bool minimizeToTrayOnClose)
     {
         InitializeComponent();
+        StartWithWindowsCheckBox.ToolTip = $"Launch {AppInfo.ProductName} when Windows starts.";
         StartWithWindowsCheckBox.IsChecked = startWithWindows;
         StartMinimizedCheckBox.IsChecked = startMinimized;
         MinimizeToTrayCheckBox.IsChecked = minimizeToTrayOnClose;

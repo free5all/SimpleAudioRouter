@@ -1,4 +1,4 @@
-#define MyAppName "Simple Audio Router"
+#define MyAppName "SimpleAudioRouter"
 #define MyAppVersion "1.1.0"
 #define MyAppPublisher "SimpleAudioRouter"
 #define MyAppExeName "SimpleAudioRouter.exe"

@@ -1,8 +1,8 @@
-# Simple Audio Router
+# SimpleAudioRouter
 
 Send the left and right channels of your system audio to two different speakers or headphones.
 
-Windows plays everything through one virtual cable. Simple Audio Router splits that signal and sends the left channel to one output device and the right channel to another. Handy if you want, say, a game on one pair of cans and Discord on another.
+Windows plays everything through one virtual cable. SimpleAudioRouter splits that signal and sends the left channel to one output device and the right channel to another. Handy if you want, say, a game on one pair of cans and Discord on another.
 
 ## Requirements
 
@@ -58,7 +58,7 @@ The app lives in the system tray when the window is closed (unless you turned th
 
 ## How it works
 
-System audio → Virtual Audio Cable (default device) → Simple Audio Router captures it → left/right split → your two chosen outputs.
+System audio → Virtual Audio Cable (default device) → SimpleAudioRouter captures it → left/right split → your two chosen outputs.
 
 When you quit for real, the previous default playback device is restored.
 

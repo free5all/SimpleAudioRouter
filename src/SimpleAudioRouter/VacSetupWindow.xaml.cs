@@ -17,6 +17,7 @@ public partial class VacSetupWindow : Window
     public VacSetupWindow(VacDependencyManager vac)
     {
         InitializeComponent();
+        IntroText.Text = $"{AppInfo.ProductName} needs a virtual audio driver. Download the official package, run the installer, then wait for detection.";
         _vac = vac;
 
         _pollTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
