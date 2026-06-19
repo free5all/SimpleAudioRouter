@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [main, master]
+    tags: ["v*"]
   pull_request:
 
 permissions:
@@ -11,6 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: ${{ github.ref_type == 'tag' && 'write' || 'read' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,6 +22,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/global.json
 
       - name: Generate build assets
         shell: pwsh
@@ -30,8 +37,19 @@ jobs:
       - name: Build
         run: dotnet build SimpleAudioRouter.sln -c Release --no-restore
 
-      - name: Install Inno Setup
+      - name: Cache Inno Setup
         if: github.event_name == 'push'
+        uses: actions/cache@v4
+        id: innosetup-cache
+        with:
+          path: |
+            C:\Program Files (x86)\Inno Setup 6
+            C:\Program Files\Inno Setup 6
+          key: innosetup-6-${{ runner.os }}
+          restore-keys: innosetup-6-${{ runner.os }}
+
+      - name: Install Inno Setup
+        if: github.event_name == 'push' && steps.innosetup-cache.outputs.cache-hit != 'true'
         run: choco install innosetup -y --no-progress
 
       - name: Read version
@@ -39,9 +57,13 @@ jobs:
         id: version
         shell: pwsh
         run: |
-          [xml]$project = Get-Content src/SimpleAudioRouter/SimpleAudioRouter.csproj
-          $version = ($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
-          if (-not $version) { throw "Version not found in csproj" }
+          if ('${{ github.ref_type }}' -eq 'tag') {
+            $version = '${{ github.ref_name }}' -replace '^v', ''
+          } else {
+            [xml]$project = Get-Content src/SimpleAudioRouter/SimpleAudioRouter.csproj
+            $version = ($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          }
+          if (-not $version) { throw "Version not found" }
           "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Build installer
@@ -50,9 +72,19 @@ jobs:
         run: ./installer/build-installer.ps1
 
       - name: Upload installer artifact
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_type == 'branch'
         uses: actions/upload-artifact@v4
         with:
           name: SimpleAudioRouter-Setup-v${{ steps.version.outputs.version }}
           path: dist/SimpleAudioRouter-Setup-*.exe
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: dist/SimpleAudioRouter-Setup-*.exe
+          fail_on_unmatched_files: true

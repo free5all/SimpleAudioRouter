@@ -3,7 +3,9 @@
 #define MyAppPublisher "SimpleAudioRouter"
 #define MyAppExeName "SimpleAudioRouter.exe"
 #define MyAppMutex "SimpleAudioRouter.SingleInstance"
+#ifndef PublishDir
 #define PublishDir "..\dist\publish\win-x64"
+#endif
 #ifndef AppIcon
 #define AppIcon "..\src\SimpleAudioRouter\obj\Release\net10.0-windows\app.ico"
 #endif
@@ -52,14 +54,3 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: no
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{userappdata}\SimpleAudioRouter"
-
-[Code]
-function InitializeSetup(): Boolean;
-begin
-  Result := True;
-  if not DirExists(ExpandConstant('{#PublishDir}')) then
-  begin
-    MsgBox('Publish folder not found. Run installer\build-installer.ps1 first.', mbError, MB_OK);
-    Result := False;
-  end;
-end;

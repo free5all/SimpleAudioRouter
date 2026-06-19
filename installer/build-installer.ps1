@@ -12,6 +12,12 @@ if ([string]::IsNullOrWhiteSpace($version)) {
     throw "Could not read Version from $project"
 }
 
+$iconPath = Join-Path $repoRoot "src\SimpleAudioRouter\obj\Release\net10.0-windows\app.ico"
+if (-not (Test-Path $iconPath)) {
+    Write-Host "Generating build assets..."
+    & (Join-Path $repoRoot "scripts\generate-build-assets.ps1") -Configuration Release
+}
+
 Write-Host "Publishing SimpleAudioRouter v$version (Release, win-x64, self-contained)..."
 
 dotnet publish $project `
@@ -23,6 +29,15 @@ dotnet publish $project `
 
 if (-not $?) {
     throw "dotnet publish failed."
+}
+
+if (-not (Test-Path $publishDir)) {
+    throw "Publish folder was not created: $publishDir"
+}
+
+$publishedExe = Join-Path $publishDir "SimpleAudioRouter.exe"
+if (-not (Test-Path $publishedExe)) {
+    throw "Published exe not found: $publishedExe"
 }
 
 $isccCandidates = @(
@@ -44,12 +59,15 @@ if (-not $iscc) {
 }
 
 Write-Host "Building installer with Inno Setup..."
-$iconPath = Join-Path $repoRoot "src\SimpleAudioRouter\obj\Release\net10.0-windows\app.ico"
 if (-not (Test-Path $iconPath)) {
-    throw "Generated app.ico not found at $iconPath. Run dotnet publish first."
+    throw "Generated app.ico not found at $iconPath"
 }
 
-& $iscc "/DMyAppVersion=$version" "/DAppIcon=$iconPath" $issFile
+& $iscc `
+    "/DMyAppVersion=$version" `
+    "/DAppIcon=$iconPath" `
+    "/DPublishDir=$publishDir" `
+    $issFile
 
 if (-not $?) {
     throw "Inno Setup compile failed."
