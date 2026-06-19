@@ -1,0 +1,55 @@
+<UserControl x:Class="SimpleAudioRouter.Controls.TitleBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root"
+             Height="32">
+    <Border Background="{StaticResource SurfaceBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="0,0,0,1"
+            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+        <Grid Margin="8,0,4,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Image Grid.Column="0"
+                   Width="16"
+                   Height="16"
+                   Margin="0,0,8,0"
+                   VerticalAlignment="Center"
+                   Source="{Binding IconSource, ElementName=Root}"/>
+
+            <TextBlock Grid.Column="1"
+                       Text="{Binding Title, ElementName=Root}"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       Foreground="{StaticResource TextBrush}"/>
+
+            <ContentPresenter Grid.Column="2"
+                              Content="{Binding MenuContent, ElementName=Root}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Right"
+                              Margin="12,0,4,0"/>
+
+            <Button Grid.Column="3"
+                    Style="{StaticResource ChromeButtonStyle}"
+                    Content="&#xE921;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Minimize"
+                    Visibility="{Binding ShowMinimize, ElementName=Root, Converter={StaticResource BoolToVisibility}}"
+                    Click="MinimizeButton_Click"/>
+
+            <Button Grid.Column="4"
+                    Style="{StaticResource ChromeCloseButtonStyle}"
+                    Content="&#xE8BB;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Close"
+                    Click="CloseButton_Click"/>
+        </Grid>
+    </Border>
+</UserControl>

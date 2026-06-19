@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SimpleAudioRouter</RootNamespace>
+    <AssemblyName>SimpleAudioRouter</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>assets\app.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyTitle>Simple Audio Router</AssemblyTitle>
+    <Product>Simple Audio Router</Product>
+    <Company>SimpleAudioRouter</Company>
+    <Description>Splits system audio to separate left and right output devices.</Description>
+    <Copyright>Copyright © SimpleAudioRouter</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleAudioRouter.Core\SimpleAudioRouter.Core.csproj" />
+  </ItemGroup>
+
+</Project>
