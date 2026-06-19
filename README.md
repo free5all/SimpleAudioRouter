@@ -12,7 +12,7 @@ Windows plays everything through one virtual cable. Simple Audio Router splits t
 
 ## Install
 
-Download **SimpleAudioRouter-Setup-1.0.0.exe** from the GitHub Releases page (or the latest Actions build artifact) and run it.
+Download the latest `SimpleAudioRouter-Setup-{version}.exe` from [GitHub Releases](https://github.com/free5all/SimpleAudioRouter/releases).
 
 ## Build from source
 
@@ -23,6 +23,12 @@ dotnet build SimpleAudioRouter.sln -c Release
 dotnet run --project src/SimpleAudioRouter/SimpleAudioRouter.csproj
 ```
 
+For the proper exe icon and notification name, run the built exe directly:
+
+```powershell
+.\src\SimpleAudioRouter\bin\Release\net10.0-windows\SimpleAudioRouter.exe
+```
+
 ### Installer
 
 Also needs [Inno Setup 6](https://jrsoftware.org/isinfo.php):
@@ -31,7 +37,7 @@ Also needs [Inno Setup 6](https://jrsoftware.org/isinfo.php):
 .\installer\build-installer.ps1
 ```
 
-Output lands in `dist/SimpleAudioRouter-Setup-1.0.0.exe`.
+Output: `dist/SimpleAudioRouter-Setup-<version>.exe` (version comes from the csproj).
 
 ## Usage
 
@@ -47,7 +53,7 @@ The app lives in the system tray when the window is closed (unless you turned th
 | Option | What it does |
 |--------|----------------|
 | Start with Windows | Adds a shortcut to your Startup folder |
-| Start minimized to tray | Any launch — manual or at boot — opens straight to the tray |
+| Start minimized to tray | Any launch opens straight to the tray |
 | Minimize to tray when closing | Close button hides to tray instead of quitting |
 
 ## How it works
@@ -55,3 +61,7 @@ The app lives in the system tray when the window is closed (unless you turned th
 System audio → Virtual Audio Cable (default device) → Simple Audio Router captures it → left/right split → your two chosen outputs.
 
 When you quit for real, the previous default playback device is restored.
+
+## Releases
+
+Pushes to `main`/`master` build the installer and publish a GitHub Release tagged `v{version}`, where version is read from `src/SimpleAudioRouter/SimpleAudioRouter.csproj`. Bump that before merging if you want a new release version.

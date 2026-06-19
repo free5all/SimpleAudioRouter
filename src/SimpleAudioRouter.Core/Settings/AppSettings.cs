@@ -11,6 +11,7 @@ public sealed class AppSettings
     public bool StartMinimized { get; set; }
     public bool MinimizeToTrayOnClose { get; set; } = true;
     public bool TrayNotificationShown { get; set; }
+    public string? UpdateNotificationDismissedForVersion { get; set; }
     public string? SavedDefaultDeviceId { get; set; }
     public DeviceRouteGains LeftDeviceGains { get; set; } = DeviceRouteGains.StereoDefault();
     public DeviceRouteGains RightDeviceGains { get; set; } = DeviceRouteGains.StereoDefault();

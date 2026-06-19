@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="BgColor">#FFEFF1F5</Color>
+    <Color x:Key="SurfaceColor">#FFFFFFFF</Color>
+    <Color x:Key="SurfaceRaisedColor">#FFE6E9EF</Color>
+    <Color x:Key="BorderColor">#FFCCD0DA</Color>
+    <Color x:Key="AccentColor">#FF1E66F5</Color>
+    <Color x:Key="TextColor">#FF4C4F69</Color>
+    <Color x:Key="MutedTextColor">#FF6C6F85</Color>
+    <Color x:Key="MeterFillColor">#FF179299</Color>
+
+</ResourceDictionary>

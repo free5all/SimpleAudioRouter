@@ -1,10 +1,12 @@
 #define MyAppName "Simple Audio Router"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "SimpleAudioRouter"
 #define MyAppExeName "SimpleAudioRouter.exe"
 #define MyAppMutex "SimpleAudioRouter.SingleInstance"
 #define PublishDir "..\dist\publish\win-x64"
-#define AppIcon "..\src\SimpleAudioRouter\assets\app.ico"
+#ifndef AppIcon
+#define AppIcon "..\src\SimpleAudioRouter\obj\Release\net10.0-windows\app.ico"
+#endif
 
 [Setup]
 AppId={{8F4E2A91-6C3D-4B1E-9F7A-2D5E8C1B4A03}

@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private TrayService? _tray;
 
     private bool _allowExit;
+    private bool _initialized;
     private bool _suppressDeviceEvents;
     private string? _runningLeftId;
     private string? _runningRightId;
@@ -53,9 +54,23 @@ public partial class MainWindow : Window
         Closing += MainWindow_Closing;
     }
 
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    public void EnsureInitialized()
     {
-        _tray = new TrayService(ShowFromTray, ShowSettings, ExitApplication);
+        if (_initialized)
+            return;
+
+        _initialized = true;
+        InitializeApplication();
+    }
+
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e) => EnsureInitialized();
+
+    private void InitializeApplication()
+    {
+        if (_launchInTray)
+            ShowInTaskbar = false;
+
+        _tray = new TrayService(ShowFromTray, ShowSettingsFromTray, ExitApplication);
 
         if (!string.IsNullOrWhiteSpace(_settings.SavedDefaultDeviceId))
         {
@@ -76,12 +91,54 @@ public partial class MainWindow : Window
         RefreshUiAndRouting();
 
         if (!_vacManager.IsInstalled)
-            ShowVacSetup();
+            ShowVacSetup(attachToMain: !_launchInTray);
         else if (_launchInTray)
             HideToTray();
 
         _refreshTimer.Start();
         _meterTimer.Start();
+
+        _ = CheckForUpdatesAsync();
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var result = await UpdateChecker.CheckAsync(_pipeCts.Token);
+            if (!result.IsUpdateAvailable || result.LatestVersion is null)
+                return;
+
+            if (string.Equals(
+                    _settings.UpdateNotificationDismissedForVersion,
+                    result.LatestVersion,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                var notice = new UpdateNoticeWindow(result.LatestVersion, result.ReleasePageUrl);
+                if (IsVisible && Visibility == Visibility.Visible)
+                {
+                    notice.Owner = this;
+                    notice.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    notice.ShowInTaskbar = false;
+                }
+
+                notice.ShowDialog();
+                _settings.UpdateNotificationDismissedForVersion = result.LatestVersion;
+                _settings.Save();
+            });
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+            // Ignore update check failures.
+        }
     }
 
     private void NormalizeDeviceSelections()
@@ -296,9 +353,12 @@ public partial class MainWindow : Window
 
     private void UpdateRoutingStatus()
     {
+        var vacId = _vacManager.TryGetEndpoints()?.RenderDevice.ID;
+        var defaultOk = vacId is not null && _defaultDeviceService.IsDefaultPlaybackDevice(vacId);
+
         SetStatus(
             "Routing",
-            _router.DefaultDeviceApplied ? StatusIndicatorState.Ok : StatusIndicatorState.Warning);
+            defaultOk ? StatusIndicatorState.Ok : StatusIndicatorState.Warning);
     }
 
     private void SetStatus(string text, StatusIndicatorState indicator = StatusIndicatorState.Idle)
@@ -374,22 +434,44 @@ public partial class MainWindow : Window
             : (System.Windows.Media.Brush)System.Windows.Application.Current.FindResource("BorderBrush");
     }
 
-    private void ShowVacSetup()
+    private void ShowVacSetup(bool attachToMain = true)
     {
-        var wizard = new VacSetupWindow(_vacManager) { Owner = this };
+        if (attachToMain && (!IsVisible || Visibility != Visibility.Visible))
+            ShowFromTray();
+
+        var wizard = new VacSetupWindow(_vacManager);
+        if (attachToMain && IsVisible)
+            wizard.Owner = this;
+        else
+            wizard.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
         wizard.ShowDialog();
         RefreshUiAndRouting();
+
         if (_launchInTray && _vacManager.IsInstalled)
             HideToTray();
     }
 
-    private void ShowSettings()
+    private void ShowSettingsFromTray() => ShowSettings(fromTray: true);
+
+    private void ShowSettings(bool fromTray = false)
     {
         var previousMinimizeToTray = _settings.MinimizeToTrayOnClose;
         var dialog = new SettingsWindow(
             _settings.StartWithWindows,
             _settings.StartMinimized,
-            _settings.MinimizeToTrayOnClose) { Owner = this };
+            _settings.MinimizeToTrayOnClose);
+
+        if (fromTray && (!IsVisible || Visibility != Visibility.Visible))
+        {
+            dialog.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            dialog.ShowInTaskbar = true;
+        }
+        else
+        {
+            dialog.Owner = this;
+        }
+
         if (dialog.ShowDialog() != true)
             return;
 
@@ -426,8 +508,12 @@ public partial class MainWindow : Window
             return;
         }
 
-        Show();
+        if (Visibility != Visibility.Visible)
+            Show();
+
+        Visibility = Visibility.Visible;
         ShowInTaskbar = true;
+        Opacity = 1;
         WindowState = WindowState.Normal;
         Activate();
     }
@@ -464,6 +550,7 @@ public partial class MainWindow : Window
 
         _tray?.Dispose();
         Close();
+        System.Windows.Application.Current.Shutdown();
     }
 
     private void SettingsMenuItem_Click(object sender, RoutedEventArgs e) => ShowSettings();

@@ -26,6 +26,7 @@ public sealed class DefaultDeviceService
         {
             PolicyConfigInterop.SetDefaultEndpoint(deviceId, ERole.Console);
             PolicyConfigInterop.SetDefaultEndpoint(deviceId, ERole.Multimedia);
+            PolicyConfigInterop.SetDefaultEndpoint(deviceId, ERole.Communications);
             return true;
         }
         catch
@@ -39,11 +40,22 @@ public sealed class DefaultDeviceService
         if (string.IsNullOrWhiteSpace(deviceId))
             return false;
 
-        // Multimedia is the role Windows exposes as "Default device" for playback.
-        return string.Equals(
-            _devices.GetDefaultPlaybackDeviceId(Role.Multimedia),
-            deviceId,
-            StringComparison.OrdinalIgnoreCase);
+        return IsDefaultForRole(deviceId, Role.Multimedia)
+            || IsDefaultForRole(deviceId, Role.Console)
+            || IsDefaultForRole(deviceId, Role.Communications);
+    }
+
+    private bool IsDefaultForRole(string deviceId, Role role)
+    {
+        try
+        {
+            var currentId = _devices.GetDefaultPlaybackDeviceId(role);
+            return string.Equals(currentId, deviceId, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public void RestoreDefaultPlaybackDevice(string? deviceId)

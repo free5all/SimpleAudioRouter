@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         WindowStyle="None"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       CornerRadius="0"
@@ -17,9 +17,9 @@
                       UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{StaticResource BorderBrush}"
+    <Border BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
-            Background="{StaticResource BgBrush}"
+            Background="{DynamicResource BgBrush}"
             MinWidth="340">
         <Grid>
             <Grid.RowDefinitions>
@@ -33,12 +33,12 @@
                 <StackPanel>
                     <CheckBox x:Name="StartWithWindowsCheckBox"
                               Content="Start with Windows"
-                              Margin="0,0,0,6"
+                              Margin="0,0,0,10"
                               ToolTip="Launch SimpleAudioRouter when Windows starts."/>
                     <CheckBox x:Name="StartMinimizedCheckBox"
                               Content="Start minimized to tray"
-                              Margin="20,0,0,10"
-                              ToolTip="On any launch — including Windows startup — open in the tray instead of showing the window."/>
+                              Margin="0,0,0,10"
+                              ToolTip="On any launch, open in the tray instead of showing the window."/>
                     <CheckBox x:Name="MinimizeToTrayCheckBox"
                               Content="Minimize to tray when closing"
                               ToolTip="When enabled, closing the window keeps the app in the tray. When disabled, closing exits the app."/>

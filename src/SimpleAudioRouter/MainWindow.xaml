@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="CanMinimize"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       CornerRadius="0"
@@ -18,9 +18,9 @@
                       UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{StaticResource BorderBrush}"
+    <Border BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
-            Background="{StaticResource BgBrush}">
+            Background="{DynamicResource BgBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

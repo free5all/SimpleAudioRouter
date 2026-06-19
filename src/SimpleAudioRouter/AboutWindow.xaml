@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         WindowStyle="None"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       CornerRadius="0"
@@ -17,10 +17,11 @@
                       UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{StaticResource BorderBrush}"
+    <Border BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
-            Background="{StaticResource BgBrush}"
-            MinWidth="340">
+            Background="{DynamicResource BgBrush}"
+            MinWidth="400"
+            MaxWidth="440">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -30,24 +31,99 @@
             <controls:TitleBar Grid.Row="0" Title="About" ShowMinimize="False"/>
 
             <Border Grid.Row="1"
-                    Style="{StaticResource ContentCardStyle}">
+                    Style="{StaticResource ContentCardStyle}"
+                    Margin="12">
                 <StackPanel>
-                    <TextBlock Text="SimpleAudioRouter"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="{StaticResource AccentBrush}"
-                               Margin="0,0,0,8"/>
+                    <StackPanel HorizontalAlignment="Center" Margin="0,0,0,20">
+                        <Image x:Name="LogoImage"
+                               Width="72"
+                               Height="72"
+                               Margin="0,0,0,12"
+                               HorizontalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Simple Audio Router"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextBrush}"
+                                   Margin="0,0,0,4"/>
+                        <TextBlock x:Name="VersionText"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource MutedTextBrush}"/>
+                    </StackPanel>
+
                     <TextBlock TextWrapping="Wrap"
-                               Foreground="{StaticResource MutedTextBrush}"
+                               TextAlignment="Center"
+                               Foreground="{DynamicResource MutedTextBrush}"
                                LineHeight="20"
-                               Text="Routes system audio through a virtual cable and sends left and right channels to separate output devices."/>
-                    <Button Content="OK"
-                            Width="80"
+                               Margin="0,0,0,20"
+                               Text="Routes system audio through a virtual cable and sends the left and right channels to separate output devices."/>
+
+                    <Border BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="0,1,0,0"
+                            Padding="0,16,0,16"
+                            Margin="0,0,0,16">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Links"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextBrush}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,10"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Style="{StaticResource TitleBarLinkStyle}"
+                                        Content="GitHub"
+                                        Click="GitHubLink_Click"/>
+                                <TextBlock Text="·"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource MutedTextBrush}"
+                                           Margin="4,0"/>
+                                <Button Style="{StaticResource TitleBarLinkStyle}"
+                                        Content="Releases"
+                                        Click="ReleasesLink_Click"/>
+                                <TextBlock Text="·"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource MutedTextBrush}"
+                                           Margin="4,0"/>
+                                <Button Style="{StaticResource TitleBarLinkStyle}"
+                                        Content="Discord"
+                                        Click="DiscordLink_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Margin="0,0,0,20">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,0,0,12">
+                            <TextBlock Text="Made by "
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource MutedTextBrush}"/>
+                            <Button Style="{StaticResource TitleBarLinkStyle}"
+                                    Content="@free5all"
+                                    Click="CreatorLink_Click"/>
+                            <TextBlock Text=" on most social media."
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource MutedTextBrush}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="Thanks to "
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource MutedTextBrush}"/>
+                            <Button Style="{StaticResource TitleBarLinkStyle}"
+                                    Content="Virtual Audio Cable"
+                                    Click="VacLink_Click"/>
+                            <TextBlock Text=" for a very useful freeware edition."
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource MutedTextBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Content="Close"
+                            Width="88"
                             HorizontalAlignment="Right"
-                            Margin="0,20,0,0"
                             IsDefault="True"
                             Style="{StaticResource SecondaryButtonStyle}"
-                            Click="OkButton_Click"/>
+                            Click="CloseButton_Click"/>
                 </StackPanel>
             </Border>
         </Grid>

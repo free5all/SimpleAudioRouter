@@ -4,6 +4,10 @@ obj/
 dist/
 .build-verify/
 
+## Generated at build (do not commit)
+**/app.ico
+**/RepositoryInfo.g.cs
+
 ## IDE / OS
 .vs/
 .vscode/

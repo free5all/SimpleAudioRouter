@@ -1,5 +1,4 @@
 using System.Windows;
-using Microsoft.Win32;
 using SimpleAudioRouter.Core.Settings;
 
 namespace SimpleAudioRouter;
@@ -10,8 +9,9 @@ public partial class App : System.Windows.Application
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
+        AppUserModelHelper.Register();
+        ThemeManager.Initialize();
         WindowDarkModeHelper.RegisterForAllWindows();
-        SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
         var settings = AppSettings.Load();
         var startMinimized = settings.StartMinimized
@@ -27,21 +27,16 @@ public partial class App : System.Windows.Application
 
         var mainWindow = new MainWindow(startMinimized);
         MainWindow = mainWindow;
-        mainWindow.Show();
+
+        if (startMinimized)
+            mainWindow.EnsureInitialized();
+        else
+            mainWindow.Show();
     }
 
     private void Application_Exit(object sender, ExitEventArgs e)
     {
-        SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
         _mutex?.ReleaseMutex();
         _mutex?.Dispose();
-    }
-
-    private static void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
-    {
-        if (e.Category != UserPreferenceCategory.General)
-            return;
-
-        WindowDarkModeHelper.RefreshAllOpenWindows();
     }
 }

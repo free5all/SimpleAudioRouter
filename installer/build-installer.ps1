@@ -6,7 +6,13 @@ $project = Join-Path $repoRoot "src\SimpleAudioRouter\SimpleAudioRouter.csproj"
 $publishDir = Join-Path $repoRoot "dist\publish\win-x64"
 $issFile = Join-Path $PSScriptRoot "SimpleAudioRouter.iss"
 
-Write-Host "Publishing SimpleAudioRouter (Release, win-x64, self-contained)..."
+[xml]$projectXml = Get-Content $project
+$version = ($projectXml.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+if ([string]::IsNullOrWhiteSpace($version)) {
+    throw "Could not read Version from $project"
+}
+
+Write-Host "Publishing SimpleAudioRouter v$version (Release, win-x64, self-contained)..."
 dotnet publish $project `
     -c Release `
     -r win-x64 `
@@ -37,7 +43,12 @@ if (-not $iscc) {
 }
 
 Write-Host "Building installer with Inno Setup..."
-& $iscc $issFile
+$iconPath = Join-Path $repoRoot "src\SimpleAudioRouter\obj\Release\net10.0-windows\app.ico"
+if (-not (Test-Path $iconPath)) {
+    throw "Generated app.ico not found at $iconPath. Run dotnet publish first."
+}
+
+& $iscc "/DMyAppVersion=$version" "/DAppIcon=$iconPath" $issFile
 
 if (-not $?) {
     throw "Inno Setup compile failed."
@@ -49,5 +60,6 @@ $setupExe = Get-ChildItem (Join-Path $repoRoot "dist\SimpleAudioRouter-Setup-*.e
 
 Write-Host ""
 Write-Host "Done."
+Write-Host "  Version:   $version"
 Write-Host "  Installer: $($setupExe.FullName)"
 Write-Host "  Size:      $([math]::Round($setupExe.Length / 1MB, 1)) MB"

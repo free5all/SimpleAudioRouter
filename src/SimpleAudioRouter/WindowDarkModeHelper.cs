@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Microsoft.Win32;
 
 namespace SimpleAudioRouter;
 
@@ -43,23 +42,8 @@ internal static class WindowDarkModeHelper
         if (hwnd == IntPtr.Zero)
             return;
 
-        var useDark = ShouldUseDarkMode() ? 1 : 0;
+        var useDark = ThemeManager.IsDarkMode ? 1 : 0;
         if (DwmSetWindowAttribute(hwnd, DwmwaUseImmersiveDarkMode, ref useDark, sizeof(int)) != 0)
             DwmSetWindowAttribute(hwnd, DwmwaUseImmersiveDarkModeBefore20h1, ref useDark, sizeof(int));
-    }
-
-    private static bool ShouldUseDarkMode()
-    {
-        try
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-            var value = key?.GetValue("AppsUseLightTheme");
-            return value is int intValue && intValue == 0;
-        }
-        catch
-        {
-            return true;
-        }
     }
 }

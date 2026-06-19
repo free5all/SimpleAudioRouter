@@ -114,12 +114,22 @@ public partial class VacSetupWindow : Window
         }
     }
 
-    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+    private void CloseButton_Click(object sender, RoutedEventArgs e) => CloseDialog();
 
-    private void LinkText_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void TitleBar_CloseClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo(VacDependencyManager.VacProductPageUrl) { UseShellExecute = true });
+        e.Handled = true;
+        CloseDialog();
     }
+
+    private void CloseDialog()
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    private void LinkText_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) =>
+        AppLinks.Open(AppLinks.VacProductPage);
 
     private void SetBusy(bool busy, string? status = null)
     {

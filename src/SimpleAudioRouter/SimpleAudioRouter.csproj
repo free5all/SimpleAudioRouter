@@ -10,20 +10,49 @@
     <RootNamespace>SimpleAudioRouter</RootNamespace>
     <AssemblyName>SimpleAudioRouter</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>assets\app.ico</ApplicationIcon>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <AssemblyTitle>Simple Audio Router</AssemblyTitle>
     <Product>Simple Audio Router</Product>
     <Company>SimpleAudioRouter</Company>
     <Description>Splits system audio to separate left and right output devices.</Description>
     <Copyright>Copyright © SimpleAudioRouter</Copyright>
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SimpleAudioRouter.Core\SimpleAudioRouter.Core.csproj" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <AppIconFile>$(IntermediateOutputPath)app.ico</AppIconFile>
+    <ApplicationIcon>$(AppIconFile)</ApplicationIcon>
+    <RepositoryInfoFile>$(IntermediateOutputPath)RepositoryInfo.g.cs</RepositoryInfoFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="assets\SimpleAudioRouter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="RepositoryInfo.g.cs" />
+    <Compile Include="$(RepositoryInfoFile)" Link="Generated\RepositoryInfo.g.cs" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="GenerateAppIcon" BeforeTargets="BeforeBuild"
+          Inputs="$(ProjectDir)assets\SimpleAudioRouter.png;$(ProjectDir)assets\generate-icon.ps1"
+          Outputs="$(AppIconFile)">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)assets\generate-icon.ps1&quot; -OutputPath &quot;$(AppIconFile)&quot;" />
+  </Target>
+
+  <Target Name="GenerateRepositoryInfo" BeforeTargets="CoreCompile"
+          Inputs="$(ProjectDir)assets\generate-repository-info.ps1;$(MSBuildThisFileDirectory)..\..\..\.git\config"
+          Outputs="$(RepositoryInfoFile)">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)assets\generate-repository-info.ps1&quot; -OutputPath &quot;$(RepositoryInfoFile)&quot; -RepoRoot &quot;$(MSBuildThisFileDirectory)..\..&quot;" />
+  </Target>
 
 </Project>

@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Name="Root"
              Height="32">
-    <Border Background="{StaticResource SurfaceBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+    <Border Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,0,0,1"
             MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
         <Grid Margin="8,0,4,0">
@@ -28,7 +28,7 @@
                        VerticalAlignment="Center"
                        FontWeight="SemiBold"
                        FontSize="13"
-                       Foreground="{StaticResource TextBrush}"/>
+                       Foreground="{DynamicResource TextBrush}"/>
 
             <ContentPresenter Grid.Column="2"
                               Content="{Binding MenuContent, ElementName=Root}"

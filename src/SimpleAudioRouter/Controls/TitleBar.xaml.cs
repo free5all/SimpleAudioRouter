@@ -23,6 +23,19 @@ public partial class TitleBar : System.Windows.Controls.UserControl
         DependencyProperty.Register(nameof(MenuContent), typeof(object), typeof(TitleBar),
             new PropertyMetadata(null));
 
+    public static readonly RoutedEvent CloseClickEvent =
+        EventManager.RegisterRoutedEvent(
+            nameof(CloseClick),
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(TitleBar));
+
+    public event RoutedEventHandler CloseClick
+    {
+        add => AddHandler(CloseClickEvent, value);
+        remove => RemoveHandler(CloseClickEvent, value);
+    }
+
     public TitleBar()
     {
         InitializeComponent();
@@ -75,6 +88,13 @@ public partial class TitleBar : System.Windows.Controls.UserControl
             window.WindowState = WindowState.Minimized;
     }
 
-    private void CloseButton_Click(object sender, RoutedEventArgs e) =>
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        var args = new RoutedEventArgs(CloseClickEvent, this);
+        RaiseEvent(args);
+        if (args.Handled)
+            return;
+
         Window.GetWindow(this)?.Close();
+    }
 }

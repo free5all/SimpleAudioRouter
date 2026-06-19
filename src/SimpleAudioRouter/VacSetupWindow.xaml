@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         WindowStyle="None"
-        Background="{StaticResource BgBrush}">
+        Background="{DynamicResource BgBrush}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       CornerRadius="0"
@@ -18,24 +18,27 @@
                       UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{StaticResource BorderBrush}"
+    <Border BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
-            Background="{StaticResource BgBrush}">
+            Background="{DynamicResource BgBrush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <controls:TitleBar Grid.Row="0" Title="Virtual audio driver" ShowMinimize="False"/>
+            <controls:TitleBar Grid.Row="0"
+                               Title="Virtual audio driver"
+                               ShowMinimize="False"
+                               CloseClick="TitleBar_CloseClick"/>
 
             <Border Grid.Row="1" Style="{StaticResource ContentCardStyle}">
                 <StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,0,0,12"
-                               Foreground="{StaticResource MutedTextBrush}"
+                               Foreground="{DynamicResource MutedTextBrush}"
                                LineHeight="20"
                                Text="SimpleAudioRouter needs a virtual audio driver. Download the official package, run the installer, then wait for detection."/>
-                    <TextBlock x:Name="LinkText" Margin="0,0,0,12" Foreground="{StaticResource AccentBrush}"
+                    <TextBlock x:Name="LinkText" Margin="0,0,0,12" Foreground="{DynamicResource AccentBrush}"
                                Cursor="Hand" MouseLeftButtonUp="LinkText_MouseLeftButtonUp"
                                Text="https://vac.muzychenko.net/en/download.htm"/>
                     <TextBlock x:Name="StatusText" Text="Driver not installed." TextWrapping="Wrap" Margin="0,0,0,8"/>

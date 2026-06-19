@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -11,6 +12,8 @@ namespace SimpleAudioRouter;
 
 internal static class AppIconHelper
 {
+    private const string LogoFileName = "SimpleAudioRouter.png";
+
     private static Icon? _cachedIcon;
     private static readonly Dictionary<TrayIconState, Icon> TrayIcons = new();
 
@@ -20,34 +23,13 @@ internal static class AppIconHelper
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     private static extern bool DestroyIcon(IntPtr handle);
 
-    public static Icon GetAppIcon()
+    public static Icon GetAppIcon() => _cachedIcon ??= LoadMasterIcon();
+
+    public static Bitmap GetMenuBitmap()
     {
-        if (_cachedIcon is not null)
-            return _cachedIcon;
-
-        var exePath = Environment.ProcessPath
-            ?? System.Windows.Forms.Application.ExecutablePath;
-
-        try
-        {
-            if (!string.IsNullOrWhiteSpace(exePath) && File.Exists(exePath))
-            {
-                var icon = Icon.ExtractAssociatedIcon(exePath);
-                if (icon is not null)
-                {
-                    _cachedIcon = (Icon)icon.Clone();
-                    icon.Dispose();
-                    return _cachedIcon;
-                }
-            }
-        }
-        catch
-        {
-            // Fall back to generated icon below.
-        }
-
-        _cachedIcon = CreateFallbackIcon();
-        return _cachedIcon;
+        using var icon = (Icon)GetAppIcon().Clone();
+        using var source = icon.ToBitmap();
+        return new Bitmap(source, new System.Drawing.Size(16, 16));
     }
 
     public static ImageSource GetAppImageSource()
@@ -79,6 +61,104 @@ internal static class AppIconHelper
         return icon;
     }
 
+    public static void ClearCache()
+    {
+        _cachedIcon?.Dispose();
+        _cachedIcon = null;
+
+        foreach (var icon in TrayIcons.Values)
+            icon.Dispose();
+
+        TrayIcons.Clear();
+    }
+
+    private static Icon LoadMasterIcon()
+    {
+        foreach (var loader in new Func<Icon?>[]
+        {
+            LoadFromLogoPng,
+            LoadFromAppExecutable,
+            () => null,
+        })
+        {
+            try
+            {
+                var icon = loader();
+                if (icon is not null)
+                    return icon;
+            }
+            catch
+            {
+                // Try the next source.
+            }
+        }
+
+        return CreateFallbackIcon();
+    }
+
+    private static Icon? LoadFromLogoPng()
+    {
+        foreach (var path in GetAssetCandidates(LogoFileName))
+        {
+            if (!File.Exists(path))
+                continue;
+
+            using var bitmap = new Bitmap(path);
+            return IconFromBitmap(bitmap, 32);
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<string> GetAssetCandidates(string fileName)
+    {
+        yield return Path.Combine(AppContext.BaseDirectory, "assets", fileName);
+
+        var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        if (!string.IsNullOrWhiteSpace(assemblyDir))
+            yield return Path.Combine(assemblyDir, "assets", fileName);
+    }
+
+    private static Icon? LoadFromAppExecutable()
+    {
+        var exePath = System.Windows.Forms.Application.ExecutablePath;
+        if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+            return null;
+
+        if (IsDotNetHost(exePath))
+            return null;
+
+        var icon = Icon.ExtractAssociatedIcon(exePath);
+        if (icon is null)
+            return null;
+
+        var clone = (Icon)icon.Clone();
+        icon.Dispose();
+        return clone;
+    }
+
+    private static bool IsDotNetHost(string path)
+    {
+        var name = Path.GetFileNameWithoutExtension(path);
+        return name.Equals("dotnet", StringComparison.OrdinalIgnoreCase)
+            || name.Equals("net", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static Icon IconFromBitmap(Bitmap bitmap, int size)
+    {
+        using var sized = new Bitmap(bitmap, new System.Drawing.Size(size, size));
+        var handle = sized.GetHicon();
+        try
+        {
+            using var temp = Icon.FromHandle(handle);
+            return (Icon)temp.Clone();
+        }
+        finally
+        {
+            DestroyIcon(handle);
+        }
+    }
+
     private static Icon CreateFallbackIcon()
     {
         const int size = 32;
@@ -106,16 +186,7 @@ internal static class AppIconHelper
             });
         }
 
-        var handle = bitmap.GetHicon();
-        try
-        {
-            using var temp = Icon.FromHandle(handle);
-            return (Icon)temp.Clone();
-        }
-        finally
-        {
-            DestroyIcon(handle);
-        }
+        return IconFromBitmap(bitmap, size);
     }
 
     private static Icon CreateTrayIcon(TrayIconState state)
@@ -146,15 +217,6 @@ internal static class AppIconHelper
             }
         }
 
-        var handle = bitmap.GetHicon();
-        try
-        {
-            using var temp = Icon.FromHandle(handle);
-            return (Icon)temp.Clone();
-        }
-        finally
-        {
-            DestroyIcon(handle);
-        }
+        return IconFromBitmap(bitmap, size);
     }
 }
